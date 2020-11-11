@@ -12,16 +12,27 @@ spec:
       ref: origin/main
       subPath: external-dns
   template:
+  - sops:
+      # use PGP to decrypt files (required)
+      pgp:
+        # secret with private armored PGP private keys (required)
+        privateKeysSecretRef:
+          # (required)
+          name: pgp-secrets
   - helmTemplate:
       name: external-dns
       path: helm/chart #! Tell helm template where to find the chart location
       valuesFrom:
       - fileRef: helm/external-dns-values.yaml #! Tell helm an additional file to pass as a -f option
+      - fileRef: helm/secret-external-dns-values.yaml #! Tell helm an additional file to pass as a -f option
+      - secretRef:
+          name: secrets-that-were-setup-ahead-of-time-for-helm
       rawOptions:
       - "--namespace external-dns"
       - "--include-crds"
   #! This effectively becomes:
-  #! helm template external-dns helm/chart -f helm/external-dns-values.yaml --namespace external-dns --include-crds
+  #! helm template external-dns helm/chart -f helm/external-dns-values.yaml \
+  #!   -f helm/secret-external-dns-values.yaml --namespace external-dns --include-crds
   #! That output is then munged into ytt as stdin
   - ytt:
       ignoreUnknownComments: true
