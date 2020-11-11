@@ -1,0 +1,36 @@
+---
+apiVersion: kappctrl.k14s.io/v1alpha1
+kind: App
+metadata:
+  name: external-dns
+  namespace: kapp-controller
+spec:
+  serviceAccountName: kapp-controller-clusteradmin
+  fetch:
+  - git:
+      url: https://github.com/voor/kapp-controller-helm-pipeline.git
+      ref: origin/main
+      subPath: external-dns
+  template:
+  - helmTemplate:
+      name: external-dns
+      path: helm/chart #! Tell helm template where to find the chart location
+      valuesFrom:
+      - fileRef: helm/external-dns-values.yaml #! Tell helm an additional file to pass as a -f option
+      rawOptions:
+      - "--namespace external-dns"
+      - "--include-crds"
+  #! This effectively becomes:
+  #! helm template external-dns helm/chart -f helm/external-dns-values.yaml --namespace external-dns --include-crds
+  #! That output is then munged into ytt as stdin
+  - ytt:
+      ignoreUnknownComments: true
+      inline:
+        pathsFrom:
+        - secretRef:
+            name: secrets-that-were-setup-ahead-of-time
+      paths:
+      - manifests
+  - kbld: {}
+  deploy:
+  - kapp: {}

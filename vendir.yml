@@ -1,0 +1,10 @@
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+- path: external-dns/helm
+  contents:
+  - path: chart
+    helmChart:
+      name: external-dns
+      repository:
+        url: https://charts.bitnami.com/bitnami

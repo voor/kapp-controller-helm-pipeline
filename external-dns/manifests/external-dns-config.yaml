@@ -1,0 +1,18 @@
+#@ load("@ytt:data", "data")
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: external-dns
+  annotations:
+    iam.amazonaws.com/permitted: ".*"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloudflare-api
+  namespace: external-dns
+type: Opaque
+stringData:
+  cloudflare_api_token: #@ data.values.cloudflare_token
