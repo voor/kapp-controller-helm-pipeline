@@ -4,6 +4,6 @@ directories:
   - helmChart:
       appVersion: 0.7.4
       version: 4.0.0
-    path: chart
-  path: external-dns/helm
+    path: .
+  path: external-dns/helm/chart
 kind: LockConfig

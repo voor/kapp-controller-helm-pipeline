@@ -1,9 +1,9 @@
 apiVersion: vendir.k14s.io/v1alpha1
 kind: Config
 directories:
-- path: external-dns/helm
+- path: external-dns/helm/chart
   contents:
-  - path: chart
+  - path: .
     helmChart:
       name: external-dns
       repository:
